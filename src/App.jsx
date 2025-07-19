@@ -1,35 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import Login from './pages/Login/Login.jsx';
+import Home from './pages/Home/Home.jsx';
+import NotFound from './pages/NotFound/NotFound.jsx'; // Make sure this exists
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.jsx';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useState } from 'react';
+import DataProvider from './context/DataProvider';
+// import Navigation from './components/Navigation/Navigation.jsx'; // Uncomment if you have this
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const handleLogin = (status) => {
+    setIsAuthenticated(status);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="App">
+      <DataProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/login"
+              element={
+                isAuthenticated
+                  ? <Navigate to="/" replace />
+                  : <Login onLogin={handleLogin} />
+              }
+            />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                  {/* Replace or uncomment this if you have a Navigation component */}
+                  {/* <Navigation onLogout={handleLogout} /> */}
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </DataProvider>
+    </div>
+  );
 }
 
-export default App
+export default App;

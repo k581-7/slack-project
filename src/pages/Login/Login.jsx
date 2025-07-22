@@ -36,14 +36,14 @@ function Login({ onLogin }) {
           <>
             <p className="start-message">Click the button to sign in</p>
             <button className="slack-btn" onClick={() => setShowForm(true)}>
-              Sign-in to Pingly
+              Sign-in to Slack
             </button>
           </>
         )}
 
         {showForm && (
           <form onSubmit={handleSubmit} className="login-form">
-            <h2>Login</h2>
+            <h2>Slack</h2>
 
             <div className="form-group">
               <label>Email:</label>

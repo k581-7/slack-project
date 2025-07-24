@@ -30,20 +30,29 @@ function Login({ onLogin }) {
   };
 
   return (
+    
     <div className="login-wrapper">
       <div className="login-container">
         {!showForm && (
           <>
             <p className="start-message">Click the button to sign in</p>
             <button className="slack-btn" onClick={() => setShowForm(true)}>
-              Sign-in to Slack
+              Sign-in to Pingsly
             </button>
+
+             <p className="signup-redirect">
+      New to Pingsly?{" "}
+        <span onClick={() => navigate("/signup")} className="signup-link">
+          Create an account
+          </span>
+          </p>
+
           </>
         )}
 
         {showForm && (
           <form onSubmit={handleSubmit} className="login-form">
-            <h2>Slack</h2>
+            <h2>Pingsly</h2>
 
             <div className="form-group">
               <label>Email:</label>

@@ -1,5 +1,8 @@
 import Login from './pages/Login/login.jsx';
+import './index.css';
 import Message from './pages/Message/Message.jsx';
+import Chat from './components/Chat/Chat.jsx';
+import Signup from './pages/Login/SignUp.jsx';
 import Home from './pages/Home/Home.jsx';
 import NotFound from './pages/NotFound/NotFound.jsx';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.jsx';
@@ -48,6 +51,7 @@ function App() {
               }
             />
             <Route path="*" element={<NotFound />} />
+            <Route path="/signup" element={<Signup />} />
           </Routes>
         </BrowserRouter>
       </DataProvider>

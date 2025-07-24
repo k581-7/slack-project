@@ -6,9 +6,22 @@ function Home() {
   return (
     <div style={{ display: "flex", height: "100vh" }}>
       <SideBar />
-      <div style={{ flexGrow: 1, padding: "1rem", backgroundColor: "#fef3e2" }}>
-        <h1>Home Page</h1>
-        <Message />
+      <div
+        style={{
+          flexGrow: 1,
+          padding: "1rem",
+          backgroundColor: "#fef3e2",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
+      >
+        <h1></h1>
+
+        {/* Message component placed at the bottom */}
+        <div style={{ marginTop: "auto" }}>
+          <Message />
+        </div>
       </div>
     </div>
   );

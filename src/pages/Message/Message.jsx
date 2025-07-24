@@ -8,9 +8,21 @@ function Message() {
   const { userHeaders } = useData();
   const [receiver, setReceiver] = useState("");
   const [message, setMessage] = useState("");
+  const [sentMessages, setSentMessages] = useState([]); // 👈 local display state
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const newMessage = {
+      id: Date.now(),
+      receiver_id: Number(receiver),
+      body: message,
+    };
+
+    // 1. Display locally first
+    setSentMessages((prev) => [...prev, newMessage]);
+    setMessage("");
+
     try {
       const requestBody = {
         receiver_id: Number(receiver),
@@ -28,15 +40,23 @@ function Message() {
       if (data.data) {
         console.log(data.data);
         alert("✅ Successfully sent a message!");
-        setMessage(""); // Clear input
       }
     } catch (error) {
-      alert("❌ Cannot send message");
+      alert(`${error}❌ Cannot send message`);
     }
   };
 
   return (
     <div className="max-w-3xl mx-auto mt-6">
+      {/* Display Sent Messages */}
+      <div className="mb-4 space-y-2">
+        {sentMessages.map((msg) => (
+          <div key={msg.id} className="bg-blue-100 text-blue-900 rounded px-3 py-2 text-sm max-w-sm">
+            <strong>To {msg.receiver_id}:</strong> {msg.body}
+          </div>
+        ))}
+      </div>
+
       <form onSubmit={handleSubmit}>
         <label htmlFor="chat" className="sr-only">Your message</label>
 
@@ -61,7 +81,7 @@ function Message() {
             <span className="sr-only">Upload image</span>
           </button>
 
-          {/* Emoji Button */}
+          {/* Emoji Button (unchanged) */}
           <button type="button" className="p-2 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
               <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.408 7.5h.01m-6.876 0h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM4.6 11a5.5 5.5 0 0 0 10.81 0H4.6Z" />
@@ -80,7 +100,7 @@ function Message() {
             className="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
           />
 
-          {/* Send Button */}
+          {/* Send Button (unchanged) */}
           <button type="submit" className="inline-flex justify-center p-2 text-blue-600 rounded-full hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
             <svg className="w-5 h-5 rotate-90" fill="currentColor" viewBox="0 0 18 20" xmlns="http://www.w3.org/2000/svg">
               <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />

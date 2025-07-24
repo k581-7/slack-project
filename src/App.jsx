@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.jsx';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useState } from 'react';
 import DataProvider from './context/DataProvider';
+import { AuthProvider } from './context/AuthContext.jsx';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -23,6 +24,7 @@ function App() {
 
   return (
     <div className="App">
+    <AuthProvider>
       <DataProvider>
         <BrowserRouter>
           <Routes>
@@ -55,6 +57,7 @@ function App() {
           </Routes>
         </BrowserRouter>
       </DataProvider>
+      </AuthProvider>
     </div>
   );
 }

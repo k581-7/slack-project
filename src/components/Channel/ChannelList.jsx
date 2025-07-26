@@ -1,20 +1,18 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataProvider';
-import axios from 'axios'; // Add axios import
-import './Sidebar.css';
+import axios from 'axios';
 import UserList from '../UserList/UserList';
-// Remove the ChannelList import since we're building it into this component
 
-const API_URL = import.meta.env.VITE_API_URL; // Add API_URL
+const API_URL = import.meta.env.VITE_API_URL;
 
-function Sidebar({ onChannelSelect, selectedChannelId }) { // Add props for channel selection
+function Sidebar({ onChannelSelect, selectedChannelId }) {
   const [user, setUser] = useState(null);
-  const [channels, setChannels] = useState([]); // Add channels state
-  const [showCreateForm, setShowCreateForm] = useState(false); // Add form state
-  const [newChannelName, setNewChannelName] = useState(""); // Add channel name state
+  const [channels, setChannels] = useState([]);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newChannelName, setNewChannelName] = useState("");
   const { userHeaders } = useData();
 
+  // Fetch user - keeping your existing pattern
   useEffect(() => {
     async function fetchUser() {
       try {
@@ -31,7 +29,6 @@ function Sidebar({ onChannelSelect, selectedChannelId }) { // Add props for chan
         }
 
         const data = await response.json();
-        console.log("User data:", data);
         setUser(data);
       } catch (error) {
         console.error('Error fetching user:', error);
@@ -41,7 +38,7 @@ function Sidebar({ onChannelSelect, selectedChannelId }) { // Add props for chan
     if (!user) fetchUser();
   }, [user, userHeaders]);
 
-  // Get channels from API
+  // Get channels - using axios like signup
   const getChannels = async () => {
     try {
       const requestHeaders = {
@@ -56,24 +53,27 @@ function Sidebar({ onChannelSelect, selectedChannelId }) { // Add props for chan
     }
   };
 
-  // Create channel - following your signup structure
+  // Create channel - EXACTLY like your signup structure
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     try {
+      // Create the object first (like signup)
       const newChannel = {
         name: newChannelName,
         user_ids: []
       };
 
+      // Use axios.post with headers (exactly like signup)
       const requestHeaders = {
         headers: userHeaders
       };
 
       await axios.post(`${API_URL}/channels`, newChannel, requestHeaders);
 
+      // Success feedback (like signup)
       alert("Channel created successfully!");
-      setNewChannelName("");
+      setNewChannelName(""); // Clear form (like signup clearing fields)
       setShowCreateForm(false);
       
       // Refresh the channels list
@@ -104,7 +104,7 @@ function Sidebar({ onChannelSelect, selectedChannelId }) { // Add props for chan
           </button>
         </div>
 
-        {/* Create Channel Form */}
+        {/* Create Channel Form - same structure as signup form */}
         {showCreateForm && (
           <form onSubmit={handleSubmit} className="create-channel-form">
             <input
@@ -117,7 +117,7 @@ function Sidebar({ onChannelSelect, selectedChannelId }) { // Add props for chan
             />
             <div className="form-actions">
               <button type="submit" className="btn-create">
-                Create
+                Create Channel
               </button>
               <button
                 type="button"
@@ -133,7 +133,7 @@ function Sidebar({ onChannelSelect, selectedChannelId }) { // Add props for chan
           </form>
         )}
 
-        {/* Dynamic Channels List */}
+        {/* Channels List */}
         <ul className="channel-list">
           {channels.length > 0 ? (
             channels.map((channel) => (

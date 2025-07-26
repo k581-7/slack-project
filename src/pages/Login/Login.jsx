@@ -29,13 +29,7 @@ function Login({ onLogin }) {
       console.log('Response headers:', headers);
 
       if (data.data && headers) {
-        // ✅ Save auth headers to localStorage
-        localStorage.setItem('access-token', headers['access-token'] || '');
-        localStorage.setItem('client', headers['client'] || '');
-        localStorage.setItem('uid', headers['uid'] || '');
-        localStorage.setItem('authToken', headers['access-token'] || '');
-
-        // Optional: You can use context to store headers globally
+        // Store headers in context
         handleHeaders(headers);
 
         const token =

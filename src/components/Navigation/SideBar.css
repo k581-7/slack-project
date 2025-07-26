@@ -29,3 +29,106 @@ h1 {
   font-size: 0.9rem;
   color: #f6ebda;
 }
+
+.sidebar-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 8px; /* Space between "Channels" and "+" */
+}
+
+.create-channel-btn {
+  background: transparent;
+  color: inherit; /* Uses the same color as your sidebar text */
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 0;
+  width: auto;
+  height: auto;
+  line-height: 1;
+}
+
+.create-channel-btn:hover {
+  opacity: 0.7;
+}
+
+.create-channel-form {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.channel-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-create, .btn-cancel {
+  padding: 8px 16px;
+  border: 2px solid #820F17; /* Border color */
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-create {
+  background: #FFE6DC; /* Inside fill color */
+  color: #820F17; /* Font color */
+}
+
+.btn-create:hover {
+  background: #820F17;
+  color: #FFE6DC;
+}
+
+.btn-cancel {
+  background: #FFE6DC; /* Inside fill color */
+  color: #820F17; /* Font color */
+}
+
+.btn-cancel:hover {
+  background: #820F17;
+  color: #FFE6DC;
+}
+
+.channel-link {
+  display: block;
+  padding: 6px 8px;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.channel-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.channel-link.selected {
+  background: #007bff;
+  color: white;
+}
+
+.no-channels {
+  color: #888;
+  font-style: italic;
+  padding: 8px;
+  font-size: 14px;
+}

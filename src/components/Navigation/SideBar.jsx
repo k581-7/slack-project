@@ -2,13 +2,12 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataProvider';
 import axios from 'axios';
-import './Sidebar.css';
+// import './Sidebar.css';
 import pingslyLogo from '../../assets/pingsly_nobg.png';
-
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUserId }) {
+function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUserId, setMessages }) {
   const [user, setUser] = useState(null);
   const [channels, setChannels] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -16,6 +15,34 @@ function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUse
   const [showExpandedUserList, setShowExpandedUserList] = useState(false);
   const { userHeaders } = useData();
   const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(0);
+
+  const fetchConversation = async () => {
+    try {
+      // We fetch the conversation with the user by ID
+      const conversation = await axios.get(`${API_URL}/messages`, {
+        params: {
+          receiver_id: selectedUserId,
+          receiver_class: 'User'
+        },
+        headers: {
+          client: userHeaders.client,
+          uid: userHeaders.uid,
+          expiry: userHeaders.expiry,
+          'access-token': userHeaders['access-token']
+        }
+      });
+
+      // We set the conversations to the conversation state
+      setMessages(conversation?.data?.data);
+      console.log(conversation?.data?.data);
+    } catch (e) {
+      // For now we log what the error is, if there's any.
+      // This error should be handled gracefully, i.e. show a toast that says 'An unexpected error occured';
+      // compare first if this error is in server side, if not, this should already be handled by the client
+      console.error("Failed to retrieve conversation.")
+    }
+  }
 
   useEffect(() => {
     async function fetchUser() {
@@ -48,7 +75,7 @@ function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUse
       const requestHeaders = {
         headers: userHeaders
       };
-      
+
       const response = await axios.get(`${API_URL}/channels`, requestHeaders);
       const { data } = response;
       setChannels(data.data || []);
@@ -59,7 +86,7 @@ function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUse
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const newChannel = {
         name: newChannelName,
@@ -75,29 +102,29 @@ function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUse
       alert("Channel created successfully!");
       setNewChannelName("");
       setShowCreateForm(false);
-      
+
       getChannels();
-      
+
     } catch (error) {
       alert("Channel creation failed. Please try again.");
       console.error(error);
     }
   };
 
-useEffect(() => {
-  if (userHeaders) getChannels();
-}, [userHeaders]);
+  useEffect(() => {
+    if (userHeaders) getChannels();
+  }, [userHeaders]);
 
-useEffect(() => {
-  if (userHeaders) getUsers();
-}, [userHeaders]);
+  useEffect(() => {
+    if (userHeaders) getUsers();
+  }, [userHeaders]);
 
   const getUsers = async () => {
     try {
       const requestHeaders = {
         headers: userHeaders
       };
-      
+
       const response = await axios.get(`${API_URL}/users`, requestHeaders);
       const { data } = response;
       setUsers(data.data || []);
@@ -106,12 +133,17 @@ useEffect(() => {
     }
   };
 
+  useEffect(() => {
+    if (selectedUser === 0) return;
+
+    fetchConversation()
+  }, [selectedUser])
   return (
     <div className="sidebar">
       <div>
         <h1 className="side-bar-home">
           <Link to="/">
-            <img src={pingslyLogo} alt="Pingsly Logo"/>
+            <img src={pingslyLogo} alt="Pingsly Logo" />
             Pingsly
           </Link>
         </h1>
@@ -195,7 +227,10 @@ useEffect(() => {
               .map((userItem) => (
                 <li key={userItem.id}>
                   <div
-                    onClick={() => onUserSelect && onUserSelect(userItem)}
+                    onClick={() => {
+                      onUserSelect && onUserSelect(userItem);
+                      setSelectedUser(userItem.id);
+                    }}
                     className={`user-link ${selectedUserId === userItem.id ? 'selected' : ''}`}
                     style={{ cursor: 'pointer' }}
                   >

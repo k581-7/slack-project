@@ -1,49 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useData } from "../../context/DataProvider";
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function Message({ receiverId = null, receiverType = "User", channelId = null, showReceiverInput = false }) {
+function Message({ receiverId = null, receiverType = "User", channelId = null, showReceiverInput = false, messages }) {
   const { userHeaders } = useData();
   const [receiver, setReceiver] = useState("");
   const [message, setMessage] = useState("");
-
-  // This is the conversation between the Receiver and Sender
-  const [conversation, setConversation] = useState([]);
-
-  const fetchConversation = async () => {
-    try {
-      // We fetch the conversation with the user by ID
-      const conversation = await axios.get(`${API_URL}/messages`, {
-        params: {
-          receiver_id: receiverId,
-          receiver_class: receiverType
-        },
-        headers: {
-          client: userHeaders.client,
-          uid: userHeaders.uid,
-          expiry: userHeaders.expiry,
-          'access-token': userHeaders['access-token']
-        }
-      });
-
-      // We set the conversations to the conversation state
-      setConversation(conversation?.data?.data);
-    } catch (e) {
-      // For now we log what the error is, if there's any.
-      // This error should be handled gracefully, i.e. show a toast that says 'An unexpected error occured';
-      // compare first if this error is in server side, if not, this should already be handled by the client
-      console.error("Failed to retrieve conversation.")
-    }
-  }
-
-  // We use `useEffect` so this would run when `Message` component mounts
-  // We use an empty array as the dependency to ensure this effect would only run once on mount
-  useEffect(() => {
-    // We call the function that retrieves the conversation for the user by ID
-    fetchConversation();
-  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -98,7 +62,7 @@ function Message({ receiverId = null, receiverType = "User", channelId = null, s
       {/* Add overflow to handle increasing number of messages; this will allow users to simply scroll within the div, feel free to change the height */}
       <div>
         <div className="mb-4 space-y-2">
-          {conversation.map(message => {
+          {messages.map(message => {
             const isReceiver = message.receiver?.id === receiverId;
             return (
               <div

@@ -4,7 +4,7 @@ import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function Message({ receiverId = null, receiverType = "User", channelId = null, showReceiverInput = false, messsages }) {
+function Message({ receiverId = null, receiverType = "User", channelId = null, showReceiverInput = false, messages, setMessages }) {
   const { userHeaders } = useData();
   const [receiver, setReceiver] = useState("");
   const [message, setMessage] = useState("");
@@ -25,7 +25,7 @@ function Message({ receiverId = null, receiverType = "User", channelId = null, s
     };
 
     // Display locally first
-    setConversation((prev) => [...prev, newMessage]);
+    setMessages((prev) => [...prev, newMessage]);
     setMessage("");
 
     try {
@@ -74,7 +74,7 @@ function Message({ receiverId = null, receiverType = "User", channelId = null, s
       </div> */}
       <div>
         <div className="mb-4 space-y-2">
-          {messsages.map(message => {
+          {messages !== undefined ? messages.map(message => {
             const isReceiver = message.receiver?.id === receiverId;
             return (
               <div
@@ -87,7 +87,7 @@ function Message({ receiverId = null, receiverType = "User", channelId = null, s
                 </div>
               </div>
             )
-          })}
+          }) : null}
         </div>
       </div>
 

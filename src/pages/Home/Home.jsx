@@ -43,7 +43,7 @@ function Home() {
 
             <div style={{ marginTop: "auto" }}>
               {selectedUser && (
-                <Message receiverId={selectedUser.id} receiverType="User" messages={messages} />
+                <Message receiverId={selectedUser.id} receiverType="User" messages={messages} setMessages={setMessages} />
               )}
               {selectedChannel && (
                 <Message channelId={selectedChannel.id} receiverType="Channel" />

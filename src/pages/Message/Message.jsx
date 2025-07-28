@@ -8,8 +8,42 @@ function Message({ receiverId = null, receiverType = "User", channelId = null, s
   const { userHeaders } = useData();
   const [receiver, setReceiver] = useState("");
   const [message, setMessage] = useState("");
-  const [sentMessages, setSentMessages] = useState([]);
-  const [fetchedMessages, setFetchedMessages] = useState([]);
+
+  // This is the conversation between the Receiver and Sender
+  const [conversation, setConversation] = useState([]);
+
+  const fetchConversation = async () => {
+    try {
+      // We fetch the conversation with the user by ID
+      const conversation = await axios.get(`${API_URL}/messages`, {
+        params: {
+          receiver_id: receiverId,
+          receiver_class: receiverType
+        },
+        headers: {
+          client: userHeaders.client,
+          uid: userHeaders.uid,
+          expiry: userHeaders.expiry,
+          'access-token': userHeaders['access-token']
+        }
+      });
+
+      // We set the conversations to the conversation state
+      setConversation(conversation?.data?.data);
+    } catch (e) {
+      // For now we log what the error is, if there's any.
+      // This error should be handled gracefully, i.e. show a toast that says 'An unexpected error occured';
+      // compare first if this error is in server side, if not, this should already be handled by the client
+      console.error("Failed to retrieve conversation.")
+    }
+  }
+
+  // We use `useEffect` so this would run when `Message` component mounts
+  // We use an empty array as the dependency to ensure this effect would only run once on mount
+  useEffect(() => {
+    // We call the function that retrieves the conversation for the user by ID
+    fetchConversation();
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +61,9 @@ function Message({ receiverId = null, receiverType = "User", channelId = null, s
     };
 
     // Display locally first
-    setSentMessages((prev) => [...prev, newMessage]);
+    // Instead of sentMessages, we will add it in the conversation directly
+    // setSentMessages((prev) => [...prev, newMessage]);
+    setConversation((prev) => [...prev, newMessage]);
     setMessage("");
 
     try {
@@ -53,26 +89,30 @@ function Message({ receiverId = null, receiverType = "User", channelId = null, s
     }
   };
 
-  // Helper function to display receiver info
-  const getReceiverDisplay = (msg) => {
-    if (channelId) {
-      return `Channel #${channelId}`;
-    }
-    if (receiverId) {
-      return `User ${msg.receiver_id}`;
-    }
-    return `User ${msg.receiver_id}`;
-  };
-
   return (
     <div className="max-w-3xl mx-auto mt-6">
       {/* Display Sent Messages */}
-      <div className="mb-4 space-y-2">
-        {sentMessages.map((msg) => (
-          <div key={msg.id} className="bg-blue-100 text-blue-900 rounded px-3 py-2 text-sm max-w-sm">
-            <strong>To {getReceiverDisplay(msg)}:</strong> {msg.body}
-          </div>
-        ))}
+
+      {/* Spaces between message text box and message bubbles won't have space coz div in Home contains flexGrow attr */}
+      {/* Height of Messages are fixed, need to look into it why it won't take the space above the messages div */}
+      {/* Add overflow to handle increasing number of messages; this will allow users to simply scroll within the div, feel free to change the height */}
+      <div>
+        <div className="mb-4 space-y-2">
+          {conversation.map(message => {
+            const isReceiver = message.receiver?.id === receiverId;
+            return (
+              <div
+                key={message.id}
+                className={`flex items-center w-full ${isReceiver ? 'justify-end' : 'justify-start'}`}
+              >
+                <div className={`w-3/4 rounded-md border ${isReceiver ? 'bg-white' : 'bg-blue-500'}`}>
+                  <p className="opacity-60">{message.sender?.uid}</p>
+                  <p>{message.body}</p>
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -117,9 +157,9 @@ function Message({ receiverId = null, receiverType = "User", channelId = null, s
             onChange={(e) => setMessage(e.target.value)}
             required
             placeholder={
-              channelId 
-                ? `Message #${channelId}...` 
-                : receiverId 
+              channelId
+                ? `Message #${channelId}...`
+                : receiverId
                   ? `Message user...`
                   : "Your message..."
             }

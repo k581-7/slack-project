@@ -4,12 +4,10 @@ import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function Message({ receiverId = null, receiverType = "User", channelId = null, showReceiverInput = false }) {
+function Message({ receiverId = null, receiverType = "User", channelId = null, showReceiverInput = false, messsages }) {
   const { userHeaders } = useData();
   const [receiver, setReceiver] = useState("");
   const [message, setMessage] = useState("");
-  const [sentMessages, setSentMessages] = useState([]);
-  const [fetchedMessages, setFetchedMessages] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +25,7 @@ function Message({ receiverId = null, receiverType = "User", channelId = null, s
     };
 
     // Display locally first
-    setSentMessages((prev) => [...prev, newMessage]);
+    setConversation((prev) => [...prev, newMessage]);
     setMessage("");
 
     try {
@@ -67,12 +65,30 @@ function Message({ receiverId = null, receiverType = "User", channelId = null, s
   return (
     <div className="max-w-3xl mx-auto mt-6">
       {/* Display Sent Messages */}
-      <div className="mb-4 space-y-2">
+      {/* <div className="mb-4 space-y-2">
         {sentMessages.map((msg) => (
           <div key={msg.id} className="bg-blue-100 text-blue-900 rounded px-3 py-2 text-sm max-w-sm">
             <strong>To {getReceiverDisplay(msg)}:</strong> {msg.body}
           </div>
         ))}
+      </div> */}
+      <div>
+        <div className="mb-4 space-y-2">
+          {messsages.map(message => {
+            const isReceiver = message.receiver?.id === receiverId;
+            return (
+              <div
+                key={message.id}
+                className={`flex items-center w-full ${isReceiver ? 'justify-end' : 'justify-start'}`}
+              >
+                <div className={`w-3/4 rounded-md border ${isReceiver ? 'bg-white' : 'bg-blue-500'}`}>
+                  <p className="opacity-60">{message.sender?.uid}</p>
+                  <p>{message.body}</p>
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       <form onSubmit={handleSubmit}>

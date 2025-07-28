@@ -8,7 +8,7 @@ import pingslyLogo from '../../assets/pingsly_nobg.png';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUserId }) {
+function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUserId, setMessages }) {
   const [user, setUser] = useState(null);
   const [channels, setChannels] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -16,6 +16,34 @@ function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUse
   const [showExpandedUserList, setShowExpandedUserList] = useState(false);
   const { userHeaders } = useData();
   const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(0);
+
+  const fetchConversation = async () => {
+    try {
+      // We fetch the conversation with the user by ID
+      const conversation = await axios.get(`${API_URL}/messages`, {
+        params: {
+          receiver_id: selectedUserId,
+          receiver_class: 'User'
+        },
+        headers: {
+          client: userHeaders.client,
+          uid: userHeaders.uid,
+          expiry: userHeaders.expiry,
+          'access-token': userHeaders['access-token']
+        }
+      });
+
+      // We set the conversations to the conversation state
+      setMessages(conversation?.data?.data);
+      console.log(conversation?.data?.data);
+    } catch (e) {
+      // For now we log what the error is, if there's any.
+      // This error should be handled gracefully, i.e. show a toast that says 'An unexpected error occured';
+      // compare first if this error is in server side, if not, this should already be handled by the client
+      console.error("Failed to retrieve conversation.")
+    }
+  }
 
   useEffect(() => {
     async function fetchUser() {
@@ -92,6 +120,12 @@ useEffect(() => {
   if (userHeaders) getUsers();
 }, [userHeaders]);
 
+useEffect(() => {
+  if (selectedUserId === 0) return;
+
+  fetchConversation()
+}, [selectedUserId])
+
   const getUsers = async () => {
     try {
       const requestHeaders = {
@@ -105,7 +139,7 @@ useEffect(() => {
       console.error("Cannot get users:", error);
     }
   };
-
+  
   return (
     <div className="sidebar">
       <div>

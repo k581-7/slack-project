@@ -6,6 +6,8 @@ import React, { useState } from "react";
 function Home() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedChannel, setSelectedChannel] = useState(null);
+  const [messages, setMessages] = useState([]);
+  console.log(messages);
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
@@ -20,6 +22,7 @@ function Home() {
           setSelectedUser(null);
         }}
         selectedChannelId={selectedChannel?.id}
+        setMessages={setMessages}
       />
 
       <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
@@ -40,7 +43,7 @@ function Home() {
 
             <div style={{ marginTop: "auto" }}>
               {selectedUser && (
-                <Message receiverId={selectedUser.id} receiverType="User" />
+                <Message receiverId={selectedUser.id} receiverType="User" messages={messages} />
               )}
               {selectedChannel && (
                 <Message channelId={selectedChannel.id} receiverType="Channel" />

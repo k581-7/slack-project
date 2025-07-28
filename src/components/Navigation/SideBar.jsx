@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataProvider';
-import axios from 'axios'; // Add axios import
+import axios from 'axios';
 import './Sidebar.css';
-import UserList from '../UserList/UserList';
-// Remove the ChannelList import since we're building it into this component
+import pingslyLogo from '../../assets/pingsly_nobg.png';
 
-const API_URL = import.meta.env.VITE_API_URL; // Add API_URL
 
-function Sidebar({ onChannelSelect, selectedChannelId }) { // Add props for channel selection
+const API_URL = import.meta.env.VITE_API_URL;
+
+function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUserId }) {
   const [user, setUser] = useState(null);
-  const [channels, setChannels] = useState([]); // Add channels state
-  const [showCreateForm, setShowCreateForm] = useState(false); // Add form state
-  const [newChannelName, setNewChannelName] = useState(""); // Add channel name state
+  const [channels, setChannels] = useState([]);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newChannelName, setNewChannelName] = useState("");
+  const [showExpandedUserList, setShowExpandedUserList] = useState(false);
   const { userHeaders } = useData();
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     async function fetchUser() {
@@ -41,7 +43,6 @@ function Sidebar({ onChannelSelect, selectedChannelId }) { // Add props for chan
     if (!user) fetchUser();
   }, [user, userHeaders]);
 
-  // Get channels from API
   const getChannels = async () => {
     try {
       const requestHeaders = {
@@ -56,7 +57,6 @@ function Sidebar({ onChannelSelect, selectedChannelId }) { // Add props for chan
     }
   };
 
-  // Create channel - following your signup structure
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -76,7 +76,6 @@ function Sidebar({ onChannelSelect, selectedChannelId }) { // Add props for chan
       setNewChannelName("");
       setShowCreateForm(false);
       
-      // Refresh the channels list
       getChannels();
       
     } catch (error) {
@@ -85,16 +84,40 @@ function Sidebar({ onChannelSelect, selectedChannelId }) { // Add props for chan
     }
   };
 
-  // Load channels when component mounts
-  useEffect(() => {
-    getChannels();
-  }, [userHeaders]);
+useEffect(() => {
+  if (userHeaders) getChannels();
+}, [userHeaders]);
+
+useEffect(() => {
+  if (userHeaders) getUsers();
+}, [userHeaders]);
+
+  const getUsers = async () => {
+    try {
+      const requestHeaders = {
+        headers: userHeaders
+      };
+      
+      const response = await axios.get(`${API_URL}/users`, requestHeaders);
+      const { data } = response;
+      setUsers(data.data || []);
+    } catch (error) {
+      console.error("Cannot get users:", error);
+    }
+  };
 
   return (
     <div className="sidebar">
       <div>
+        <h1 className="side-bar-home">
+          <Link to="/">
+            <img src={pingslyLogo} alt="Pingsly Logo"/>
+            Pingsly
+          </Link>
+        </h1>
+
         <div className="sidebar-header">
-          <h1 className="sidebar-title">Channels</h1>
+          <h2 className="sidebar-title">Channels</h2>
           <button
             onClick={() => setShowCreateForm(!showCreateForm)}
             className="create-channel-btn"
@@ -104,7 +127,6 @@ function Sidebar({ onChannelSelect, selectedChannelId }) { // Add props for chan
           </button>
         </div>
 
-        {/* Create Channel Form */}
         {showCreateForm && (
           <form onSubmit={handleSubmit} className="create-channel-form">
             <input
@@ -133,7 +155,6 @@ function Sidebar({ onChannelSelect, selectedChannelId }) { // Add props for chan
           </form>
         )}
 
-        {/* Dynamic Channels List */}
         <ul className="channel-list">
           {channels.length > 0 ? (
             channels.map((channel) => (
@@ -156,10 +177,38 @@ function Sidebar({ onChannelSelect, selectedChannelId }) { // Add props for chan
       </div>
 
       <div>
-        <h1 className="sidebar-title">Private messages</h1>
-        <div className="pm-list">
-          <UserList />
+        <div className="sidebar-header">
+          <h2 className="sidebar-title">Private messages</h2>
+          <button
+            onClick={() => setShowExpandedUserList(!showExpandedUserList)}
+            className="show-user-btn"
+            title={showExpandedUserList ? "Show less users" : "Show all users"}
+          >
+            {showExpandedUserList ? '−' : '+'}
+          </button>
         </div>
+        <ul className="user-list">
+          {users.length > 0 ? (
+            users
+              .filter(userItem => userItem.id !== user?.data?.id)
+              .slice(0, showExpandedUserList ? users.length : 12)
+              .map((userItem) => (
+                <li key={userItem.id}>
+                  <div
+                    onClick={() => onUserSelect && onUserSelect(userItem)}
+                    className={`user-link ${selectedUserId === userItem.id ? 'selected' : ''}`}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {userItem.email || userItem.name || `User ${userItem.id}`}
+                  </div>
+                </li>
+              ))
+          ) : (
+            <li className="no-users">
+              No users available.
+            </li>
+          )}
+        </ul>
       </div>
 
       <div className="user-info">

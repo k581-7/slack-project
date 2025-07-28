@@ -38,7 +38,7 @@ h1 {
   gap: 8px; /* Space between "Channels" and "+" */
 }
 
-.create-channel-btn {
+.create-channel-btn, .show-user-btn {
   background: transparent;
   color: inherit; /* Uses the same color as your sidebar text */
   border: none;
@@ -117,13 +117,13 @@ h1 {
   cursor: pointer;
 }
 
-.channel-link:hover {
+.channel-link:hover, .user-link:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.channel-link.selected {
-  background: #007bff;
-  color: white;
+.channel-link.selected, .user-link.selected {
+  background: #FFE6DC;
+  color: #820F17;
 }
 
 .no-channels {
@@ -131,4 +131,16 @@ h1 {
   font-style: italic;
   padding: 8px;
   font-size: 14px;
+}
+
+.side-bar-home img {
+  height: 40px;
+}
+
+.side-bar-home a {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+  text-decoration: none;
+  color: inherit;
 }

@@ -24,7 +24,7 @@ function App() {
   return (
     <div className="App">
       <DataProvider>
-        <BrowserRouter>
+        <BrowserRouter>       
           <Routes>
             <Route
               path="/login"

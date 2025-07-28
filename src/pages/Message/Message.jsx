@@ -4,7 +4,7 @@ import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function Message({ receiverId = null, receiverType = "User", channelId = null, showReceiverInput = false, messages }) {
+function Message({ receiverId = null, receiverType = "User", channelId = null, showReceiverInput = false, messages, setMessages }) {
   const { userHeaders } = useData();
   const [receiver, setReceiver] = useState("");
   const [message, setMessage] = useState("");
@@ -27,7 +27,7 @@ function Message({ receiverId = null, receiverType = "User", channelId = null, s
     // Display locally first
     // Instead of sentMessages, we will add it in the conversation directly
     // setSentMessages((prev) => [...prev, newMessage]);
-    setConversation((prev) => [...prev, newMessage]);
+    setMessages((prev) => [...prev, newMessage]);
     setMessage("");
 
     try {

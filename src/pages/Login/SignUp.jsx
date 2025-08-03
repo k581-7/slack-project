@@ -13,6 +13,7 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     try {
       const newUser = {
         email,

@@ -144,3 +144,8 @@ h1 {
   text-decoration: none;
   color: inherit;
 }
+
+.logout-btn {
+  background-color: transparent;
+  border: none;
+}

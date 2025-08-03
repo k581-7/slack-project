@@ -6,6 +6,7 @@ const DataContext = createContext();
 
 const DataProvider = ({children}) => {
     const [userHeaders, setUserHeaders] = useState('');
+    const [allUsers, setAllUsers] = useState([]);
     // create a function that arranges the userHeaders
     const handleHeaders = (header) => {
         const updatedHeader = {
@@ -17,13 +18,22 @@ const DataProvider = ({children}) => {
         setUserHeaders(updatedHeader);
     }
 
+
+
+    const clearHeaders = () => {
+    setUserHeaders('');
+  };
+
+
     return (
         // built in component from React Context
         // returns React Element
         <DataContext.Provider value={
             {
                 handleHeaders,
-                userHeaders
+                userHeaders, 
+                setAllUsers,
+                allUsers
             }
         }>
             {/* children are the elements that can use what's in our value object */}

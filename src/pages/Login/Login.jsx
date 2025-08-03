@@ -23,10 +23,10 @@ function Login({ onLogin }) {
       const response = await axios.post(`${API_URL}/auth/sign_in`, loginCredentials);
       const { data, headers } = response;
 
-      console.log('=== LOGIN DEBUG ===');
-      console.log('Full response:', response);
-      console.log('Response data:', data);
-      console.log('Response headers:', headers);
+      // console.log('=== LOGIN DEBUG ===');
+      // console.log('Full response:', response);
+      // console.log('Response data:', data);
+      // console.log('Response headers:', headers);
 
       if (data.data && headers) {
         // Store headers in context
@@ -40,8 +40,8 @@ function Login({ onLogin }) {
 
         const userData = data.data;
 
-        console.log('Extracted token:', token?.substring(0, 20) + '...');
-        console.log('User data:', userData);
+        // console.log('Extracted token:', token?.substring(0, 20) + '...');
+        // console.log('User data:', userData);
 
         if (token) {
           onLogin(token, userData);

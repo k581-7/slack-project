@@ -8,7 +8,7 @@ import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.jsx';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useState } from 'react';
 import DataProvider from './context/DataProvider';
-import Sidebar from './components/Navigation/SideBar.jsx';
+import "@fontsource/fredoka";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -40,7 +40,7 @@ function App() {
               path="/"
               element={
                 <ProtectedRoute isAuthenticated={isAuthenticated}>
-                    <Home />
+                    <Home onLogOut={handleLogout}/>
                 </ProtectedRoute>
               }
             />

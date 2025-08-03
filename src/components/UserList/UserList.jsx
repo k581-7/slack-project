@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function UserList({ limit = null, showSearch = false }) {
+function UserList({ limit = null, showSearch = false, channelId = null, onUserSelect = null }) {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -15,14 +15,9 @@ function UserList({ limit = null, showSearch = false }) {
   const getUsers = async () => {
     try {
       setLoading(true);
-      const requestHeaders = {
-        headers: userHeaders
-      };
-      
+      const requestHeaders = { headers: userHeaders };
       const response = await axios.get(`${API_URL}/users`, requestHeaders);
-      const { data } = response;
-      const userList = data.data || [];
-      
+      const userList = response.data.data || [];
       setUsers(userList);
       setFilteredUsers(userList);
     } catch (error) {
@@ -32,7 +27,11 @@ function UserList({ limit = null, showSearch = false }) {
     }
   };
 
-  // Filter users based on search query
+  useEffect(() => {
+    getUsers();
+  }, [userHeaders]);
+
+  // Filter users
   useEffect(() => {
     if (searchQuery.trim() === '') {
       setFilteredUsers(users);
@@ -46,11 +45,6 @@ function UserList({ limit = null, showSearch = false }) {
     }
   }, [searchQuery, users]);
 
-  useEffect(() => {
-    getUsers();
-  }, [userHeaders]);
-
-  // Get users to display (with limit if specified)
   const usersToDisplay = limit ? filteredUsers.slice(0, limit) : filteredUsers;
 
   if (loading) {
@@ -59,7 +53,6 @@ function UserList({ limit = null, showSearch = false }) {
 
   return (
     <div className="user-list-container">
-      {/* Search input - only show when showSearch is true */}
       {showSearch && (
         <div className="user-search">
           <input
@@ -72,17 +65,31 @@ function UserList({ limit = null, showSearch = false }) {
         </div>
       )}
 
-      {/* Users list */}
       <ul className="user-list">
         {usersToDisplay.length > 0 ? (
           usersToDisplay.map((user) => (
             <li key={user.id} className="user-item">
-              <div 
+              <div
                 className="user-link"
                 style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  // Handle user selection for private messages
-                  console.log('Selected user:', user);
+                onClick={async () => {
+                  if (channelId) {
+                    // Add user to channel
+                    try {
+                      await axios.post(
+                        `${API_URL}/channels/${channelId}/add_member`,
+                        { user_id: user.id },
+                        { headers: userHeaders }
+                      );
+                      alert(`${user.name || user.email} has been added to the channel!`);
+                    } catch (error) {
+                      console.error('Failed to add user:', error);
+                      alert('Failed to add user to channel.');
+                    }
+                  } else if (onUserSelect) {
+                    // Select user for DM
+                    onUserSelect(user);
+                  }
                 }}
               >
                 <div className="user-info">
@@ -103,7 +110,6 @@ function UserList({ limit = null, showSearch = false }) {
         )}
       </ul>
 
-      {/* Show count if limited and there are more users */}
       {limit && filteredUsers.length > limit && !showSearch && (
         <div className="user-count">
           Showing {limit} of {filteredUsers.length} users

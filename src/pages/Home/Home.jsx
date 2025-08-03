@@ -1,14 +1,34 @@
 import Message from "../Message/Message";
 import SideBar from "../../components/Navigation/SideBar";
 import ChannelMessage from "../../components/Channel/ChannelMsg";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useData } from '../../context/DataProvider';
+import axios from 'axios';
 
-function Home() {
+const API_URL = import.meta.env.VITE_API_URL;
+
+function Home({onLogOut}) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedChannel, setSelectedChannel] = useState(null);
   const [messages, setMessages] = useState([]);
-  console.log(messages);
+  const { userHeaders, setAllUsers } = useData();
 
+ const getUsers = async () => {
+    try {
+      const requestHeaders = { headers: userHeaders };
+      const response = await axios.get(`${API_URL}/users`, requestHeaders);
+      const userList = response.data.data || [];
+      setAllUsers(userList);
+    } catch (error) {
+      console.error("Cannot get users:", error);
+    }
+  };
+
+    useEffect(() => {
+      getUsers();
+      console.log('SelectedUser :', selectedUser);
+    }, []);
+      console.log('SelectedUser :', selectedUser);
   return (
     <div style={{ display: "flex", height: "100vh" }}>
       <SideBar
@@ -23,6 +43,7 @@ function Home() {
         }}
         selectedChannelId={selectedChannel?.id}
         setMessages={setMessages}
+        className='log-out' onLogOut={onLogOut}
       />
 
       <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>

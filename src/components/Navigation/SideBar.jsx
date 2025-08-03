@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataProvider';
 import axios from 'axios';
 import './Sidebar.css';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import pingslyLogo from '../../assets/pingsly_nobg.png';
-
+import UserList from '../UserList/UserList';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUserId, setMessages }) {
+function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUserId, setMessages, onLogOut }) {
   const [user, setUser] = useState(null);
   const [channels, setChannels] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -16,11 +18,13 @@ function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUse
   const [showExpandedUserList, setShowExpandedUserList] = useState(false);
   const { userHeaders } = useData();
   const [users, setUsers] = useState([]);
+  const [recent, setRecent] = useState([]);
   const [selectedUser, setSelectedUser] = useState(0);
 
   const fetchConversation = async () => {
     try {
       // We fetch the conversation with the user by ID
+      console.log('SideBar.jsx SelectedUserID: ', selectedUserId);
       const conversation = await axios.get(`${API_URL}/messages`, {
         params: {
           receiver_id: selectedUserId,
@@ -36,7 +40,6 @@ function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUse
 
       // We set the conversations to the conversation state
       setMessages(conversation?.data?.data);
-      console.log(conversation?.data?.data);
     } catch (e) {
       // For now we log what the error is, if there's any.
       // This error should be handled gracefully, i.e. show a toast that says 'An unexpected error occured';
@@ -63,6 +66,7 @@ function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUse
         const data = await response.json();
         console.log("User data:", data);
         setUser(data);
+        getRecent();
       } catch (error) {
         console.error('Error fetching user:', error);
       }
@@ -139,7 +143,56 @@ useEffect(() => {
       console.error("Cannot get users:", error);
     }
   };
-  
+const getRecent = async () => {
+    try {
+      const requestHeaders = {
+        headers: userHeaders
+      };
+      
+      const response = await axios.get(`${API_URL}/users/recent`, requestHeaders);
+      const { data } = response;
+      setRecent(data.data || []);
+    } catch (error) {
+      console.error("Cannot get recent:", error);
+    }
+  };
+
+
+  const RecentUsers = () => {
+
+    const uniqueRecent = recent.filter(
+      (user, index, self) =>
+        index === self.findIndex((u) => u.id === user.id)
+    );
+    return (
+    uniqueRecent.map((userItem) => {
+      return (
+        <li key={userItem.id}>
+          <div
+            onClick={() => onUserSelect && onUserSelect(userItem)}
+            className={`user-link ${selectedUserId === userItem.id ? 'selected' : ''}`}
+            style={{ cursor: 'pointer' }}
+          >
+            {userItem.email || userItem.name || `User ${userItem.id}`}
+          </div>
+        </li>
+    // return (
+    //   recent.map((userItem) => {
+    //     console.log("Recent users:", recent);
+    //           return (
+    //             <li key={userItem.id}>
+    //               <div
+    //                 onClick={() => onUserSelect && onUserSelect(userItem)}
+    //                 className={`user-link ${selectedUserId === userItem.id ? 'selected' : ''}`}
+    //                 style={{ cursor: 'pointer' }}
+    //               >
+    //                 {userItem.email || userItem.name || `User ${userItem.id}`}
+    //               </div>
+    //             </li>
+              )
+            })
+    )
+  }
   return (
     <div className="sidebar">
       <div>
@@ -221,22 +274,15 @@ useEffect(() => {
             {showExpandedUserList ? '−' : '+'}
           </button>
         </div>
-        <ul className="user-list">
+        <ul className="user-list overflow-y-auto max-h-[300px]">
           {users.length > 0 ? (
-            users
-              .filter(userItem => userItem.id !== user?.data?.id)
-              .slice(0, showExpandedUserList ? users.length : 12)
-              .map((userItem) => (
-                <li key={userItem.id}>
-                  <div
-                    onClick={() => onUserSelect && onUserSelect(userItem)}
-                    className={`user-link ${selectedUserId === userItem.id ? 'selected' : ''}`}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    {userItem.email || userItem.name || `User ${userItem.id}`}
-                  </div>
-                </li>
-              ))
+            
+            showExpandedUserList ? (
+              <>
+              <RecentUsers />
+              <UserList />
+              </>
+            ) : <RecentUsers />
           ) : (
             <li className="no-users">
               No users available.
@@ -249,7 +295,10 @@ useEffect(() => {
         {user?.data?.email ? (
           <div>
             Logged in as: <span className="user-email">{user.data.email}</span>
+            <button onClick={onLogOut} className="logout-btn"><FontAwesomeIcon icon={faArrowRightFromBracket} />
+    </button>
           </div>
+          
         ) : (
           <div>Loading user...</div>
         )}

@@ -9,17 +9,13 @@
     /* background-color: #D15734; */
     background-color: transparent;
     margin-right: .50rem;
-    border: 2px solid #820F17;
     border-radius: 4px;
-
 }
-
-
 
 
 .add-member-btn {
   padding: 8px 16px;
-  border: 2px solid #820F17; /* Border color */
+  border: 2px solid #D15734; /* Border color */
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
@@ -27,6 +23,7 @@
   transition: all 0.2s ease;
   margin-left: 1rem;
   margin-top: .50rem;
+  color: #D15734;
 }
 
 

@@ -273,7 +273,7 @@ const getRecent = async () => {
             {showExpandedUserList ? '-' : '+'}
           </button>
         </div>
-        <ul className="user-list overflow-y-auto max-h-[400px]">
+        <ul className="user-list overflow-y-auto max-h-[450px]">
           {users.length > 0 ? (
             
             showExpandedUserList ? (

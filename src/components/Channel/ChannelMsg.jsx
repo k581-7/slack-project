@@ -3,6 +3,8 @@ import { useData } from "../../context/DataProvider";
 import axios from "axios";
 import UserList from "../UserList/UserList";
 import './ChannelMsg.css';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPeopleGroup } from "@fortawesome/free-solid-svg-icons";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -108,17 +110,6 @@ setChannelMembers(filteredMembers);
     }
   };
 
-  if (!channel) {
-    return (
-      <div className="flex-1 flex items-center justify-center bg-gray-50">
-        <div className="text-center text-gray-500">
-          <h3 className="text-lg font-medium mb-2">Welcome to Channels!</h3>
-          <p>Select a channel from the sidebar to start messaging</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex-1 flex flex-col">
       {/* Header */}
@@ -133,7 +124,7 @@ setChannelMembers(filteredMembers);
             onClick={() => setIsOpen(!isOpen)}
             type="button"
             className="channel-members-btn">
-            Channel Members   
+            Members <FontAwesomeIcon icon={faPeopleGroup}/>  
           </button>
           
           
@@ -233,16 +224,15 @@ setChannelMembers(filteredMembers);
 
       
 
-      {/* Modal */}
-      {showUserModal && (
-        <div className="absolute top-16 right-4 z-50 bg-[#820F17] border border-gray-300 rounded-lg shadow-lg w-64">
-          <div className="p-4">
-            <UserList onUserSelect={addUserToChannel} />
-            <button
-              onClick={() => setShowUserModal(false)}
-              className="mt-2 text-xs text-[#820F17] hover:underline"
-            >
-              Close
+{showUserModal && (
+  <div className="absolute top-16 right-4 z-50 bg-[#D15734] border border-gray-300 rounded-lg shadow-lg w-64 max-h-64 overflow-y-auto">
+    <div className="p-4">
+      <UserList onUserSelect={addUserToChannel} />
+      <button
+        onClick={() => setShowUserModal(false)}
+        className="mt-2 text-xs text-[#D15734] hover:underline bg-white p-1 rounded"
+      >
+        Close
             </button>
           </div>
         </div>

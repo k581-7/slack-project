@@ -3,6 +3,7 @@ import './Login.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../../context/DataProvider';
+import pingslyLogo from '../../assets/pingsly_nobg.png';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -81,7 +82,7 @@ function Login({ onLogin }) {
 
         {showForm && (
           <form onSubmit={handleSubmit} className="login-form">
-            <h2>Pingsly</h2>
+            <h2><img src={pingslyLogo} align="left" alt="Pingsly Logo"/>Pingsly </h2>
 
             <div className="form-group">
               <label>Email:</label>

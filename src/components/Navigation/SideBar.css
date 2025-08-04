@@ -4,14 +4,19 @@ h1 {
 }
 
 .sidebar {
+  width: auto;
+  height: auto;
+  min-height: 100vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100vh; /* make sidebar fill full height */
+  background-color: #820F17;
+  color: #FFE6D3;
+  font-size: medium;
   padding: 1rem;
-  background-color: #84141b;
-  color: #f6ebda;
 }
+
 
 .channels {
   margin-bottom: 2rem;
@@ -26,7 +31,7 @@ h1 {
 }
 
 .user-info {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #f6ebda;
 }
 
@@ -107,7 +112,7 @@ h1 {
   color: #FFE6DC;
 }
 
-.channel-link {
+.channel-link, .user-link {
   display: block;
   padding: 6px 8px;
   color: inherit;
@@ -148,4 +153,15 @@ h1 {
 .logout-btn {
   background-color: transparent;
   border: none;
+}
+
+
+.side-bar-home {
+  font-size: xx-large;
+  margin-bottom: 5rem;
+}
+
+.sidebar-title {
+ font-size: 1.5rem;
+
 }

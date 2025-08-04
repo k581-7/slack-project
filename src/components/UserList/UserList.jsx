@@ -45,7 +45,8 @@ function UserList({ limit = null, showSearch = false, channelId = null, onUserSe
     }
   }, [searchQuery, users]);
 
-  const usersToDisplay = limit ? filteredUsers.slice(0, limit) : filteredUsers;
+  // const usersToDisplay = limit ? filteredUsers.slice(0, limit) : filteredUsers;
+  const usersToDisplay = filteredUsers;
 
   if (loading) {
     return <div className="user-list-loading">Loading users...</div>;

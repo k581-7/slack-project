@@ -30,7 +30,7 @@ function Home({onLogOut}) {
     }, []);
       console.log('SelectedUser :', selectedUser);
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
+    <div className="flex h-screen overflow-hidden">
       <SideBar
         onUserSelect={(user) => {
           setSelectedUser(user);
@@ -46,28 +46,22 @@ function Home({onLogOut}) {
         className='log-out' onLogOut={onLogOut}
       />
 
-      <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+      <div className="flex flex-col flex-grow">
         {selectedChannel ? (
           <ChannelMessage channel={selectedChannel} />
         ) : (
           <div
-            style={{
-              flexGrow: 1,
-              padding: "1rem",
-              backgroundColor: "#fef3e2",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-            }}
-          >
-            <h1></h1>
+      style={{
 
-            <div style={{ marginTop: "auto" }}>
+      }}
+    >
+            <div className="flex-1">
               {selectedUser && (
-                <Message receiverId={selectedUser.id} receiverType="User" messages={messages} setMessages={setMessages} />
+                <Message receiverId={selectedUser.id} receiverEmail={selectedUser.uid} receiverType="User" messages={messages} setMessages={setMessages} />
               )}
               {selectedChannel && (
                 <Message channelId={selectedChannel.id} receiverType="Channel" />
+                
               )}
             </div>
           </div>

@@ -75,3 +75,11 @@ html,
   cursor: pointer;
   border-radius: 6px;
 }
+
+.login-form img {
+  height: 45px;
+}
+
+h2 {
+  font-size: 30px;
+}

@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useData } from "../../context/DataProvider";
 import axios from "axios";
+import "./Message.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function Message({ receiverId = null, receiverType = "User", channelId = null, showReceiverInput = false, messages, setMessages }) {
+function Message({ receiverId = null, receiverType = "User", channelId = null, showReceiverInput = false, messages, setMessages, receiverEmail = null }) {
   const { userHeaders, user } = useData();
   const [receiver, setReceiver] = useState("");
   const [message, setMessage] = useState("");
@@ -94,95 +95,100 @@ useEffect(() => {
     return `User ${msg.receiver_id}`;
   };
 
-  
-// const handleReceiver = (etv) => {
-//  console.log('Receiver Target: ', etv);
-//  setReceiver(etv);
-//  console.log('After Set RT: ', receiverId);
-// } 
 
 
 return (
-  <div className="flex-1 flex flex-col">
-    {/* Scrollable message container */}
-    <div className="flex-grow overflow-y-auto p-4">
-      <div className="mb-4 space-y-2">
-        {messages?.map((message) => {
-        const isCurrentUserSender = message.receiver?.uid === receiverId || message.receiver_id === receiverId;
-          return (
-            <div
-              key={message.id}
-              className={`flex items-center w-full ${isCurrentUserSender ? 'justify-end' : 'justify-start'}`}>
-              <div className={`w-3/4 rounded-md border border-[#820F17] p-2 ${isCurrentUserSender ? 'bg-blue-500 text-white' : 'bg-white text-[#820F17]'}`}>
-                <p className="opacity-60 text-sm">{message.sender?.uid}</p>
-                <p>{message.body}</p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+  <div className="flex flex-col h-screen bg-[#fef3e2]">
+    {/* HEADER - Fixed at top */}
+    <div className="sticky top-0 z-10 border-b border-[#820F17] bg-[#F5E9DC] flex items-center justify-between">
+      <h2 className="text-xl font-semibold text-[#820F17]">{receiverEmail}</h2>
     </div>
 
-    {/* Message form */}
-    <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200 bg-white dark:bg-gray-800">
-      <label htmlFor="chat" className="sr-only">Your message</label>
+    {/* MESSAGES - Scrollable middle */}
+<div className="flex-1 overflow-y-auto space-y-3">
+  {messages?.map((message) => {
+    const isCurrentUserSender =
+      message.receiver?.uid === receiverId || message.receiver_id === receiverId;
 
-      {/* Receiver input (optional) */}
-      {showReceiverInput && !receiverId && !channelId && (
-        <input
-          type="number"
-          required
-          placeholder="User ID"
-          value={receiver}
-          onChange={(e) => handleReceiver(e.target.value)}
-          className="mb-3 block w-full px-4 py-2 text-sm border rounded-lg border-gray-300 focus:outline-none focus:ring focus:ring-blue-200"
-        />
-      )}
-
-      <div className="flex items-center px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700">
-        {/* Upload Button */}
-        <button type="button" className="inline-flex justify-center p-2 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
-            <path fill="currentColor" d="M13 5.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0ZM7.565 7.423 4.5 14h11.518l-2.516-3.71L11 13 7.565 7.423Z" />
-            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 1H2a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z" />
-          </svg>
-          <span className="sr-only">Upload image</span>
-        </button>
-
-        {/* Emoji Button */}
-        <button type="button" className="p-2 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.408 7.5h.01m-6.876 0h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM4.6 11a5.5 5.5 0 0 0 10.81 0H4.6Z" />
-          </svg>
-          <span className="sr-only">Add emoji</span>
-        </button>
-
-        {/* Message input */}
-        <textarea
-          id="chat"
-          rows="1"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          required
-          placeholder={
-            channelId 
-              ? `Message #${channelId}...` 
-              : receiverId 
-                ? `Message ${receiverId}...`
-                : "Your message..."
-          }
-          className="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-        />
-
-        {/* Send button */}
-        <button type="submit" className="inline-flex justify-center p-2 text-[#820F17] rounded-full hover:bg-[#820F17] hover:text-[#F5E9DC] transition">
-          <svg className="w-5 h-5 rotate-90" fill="currentColor" viewBox="0 0 18 20" xmlns="http://www.w3.org/2000/svg">
-            <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
-          </svg>
-          <span className="sr-only">Send message</span>
-        </button>
+    return (
+      <div
+        key={message.id}
+        className={`flex w-full ${isCurrentUserSender ? 'justify-end' : 'justify-start'}`}
+      >
+        <div
+          className={`
+            ${isCurrentUserSender ? ' text-transparent' : ' text-[#820F17]'}
+            pl-2
+          `}
+        >
+          <div className="sender-uid">{message.sender?.uid}</div>
+          <div className="message-body-text">{message.body}</div>
+        </div>
       </div>
-    </form>
+    );
+  })}
+</div>
+
+    {/* INPUT - Fixed at bottom */}
+    <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200">
+      <form onSubmit={handleSubmit} className="p-0">
+        <label htmlFor="chat" className="sr-only">Your message</label>
+
+        {/* Optional receiver input */}
+        {showReceiverInput && !receiverId && !channelId && (
+          <input
+            type="number"
+            required
+            placeholder="User ID"
+            value={receiver}
+            onChange={(e) => setReceiver(e.target.value)}
+            className="mb-3 block w-full px-4 py-2 text-sm border rounded-lg border-gray-300 focus:outline-none focus:ring focus:ring-blue-200"
+          />
+        )}
+
+        {/* Input Bar */}
+        <div className="flex items-center py-2 bg-gray-50 dark:bg-gray-700">
+          {/* Upload button */}
+          <button type="button" className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 20 18">
+              <path fill="currentColor" d="M13 5.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0ZM7.565 7.423 4.5 14h11.518l-2.516-3.71L11 13 7.565 7.423Z" />
+              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 1H2a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z" />
+            </svg>
+          </button>
+
+          {/* Emoji button */}
+          <button type="button" className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 20 20">
+              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.408 7.5h.01m-6.876 0h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM4.6 11a5.5 5.5 0 0 0 10.81 0H4.6Z" />
+            </svg>
+          </button>
+
+          {/* Message input */}
+          <textarea
+            id="chat"
+            rows="1"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            required
+            placeholder={
+              channelId 
+                ? `Message #${channelId}...` 
+                : receiverId 
+                  ? `Message ${receiverEmail}...`
+                  : "Your message..."
+            }
+            className="block p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+          />
+
+          {/* Send button */}
+          <button type="submit" className="p-2 text-[#820F17] rounded-full hover:bg-[#820F17] hover:text-[#F5E9DC] transition">
+            <svg className="w-5 h-5 rotate-90" fill="currentColor" viewBox="0 0 18 20">
+              <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
+            </svg>
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 );
 }

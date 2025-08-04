@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+
+.sender-uid, .message-body-text {
+    margin-left: .50rem;
+}

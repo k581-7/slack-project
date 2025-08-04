@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+.sender-uid, .message-body-text, h2 {
+    margin-left: .50rem;
+}
+
+
+.channel-members-btn {
+    /* background-color: #D15734; */
+    background-color: transparent;
+    margin-right: .50rem;
+    border: 2px solid #820F17;
+    border-radius: 4px;
+
+}
+
+
+
+
+.add-member-btn {
+  padding: 8px 16px;
+  border: 2px solid #820F17; /* Border color */
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  margin-left: 1rem;
+  margin-top: .50rem;
+}
+
+
+.channel-members-dropdown{
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  position: absolute;
+  right: 0;
+  z-index: 10;
+  margin-top: 0.5rem; /* Tailwind's mt-2 = 0.5rem */
+  width: 11rem;       /* Tailwind's w-44 = 11rem */
+  background-color: #D15734;
+  margin-right: .50rem;
+}

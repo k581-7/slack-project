@@ -64,7 +64,6 @@ function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUse
         }
 
         const data = await response.json();
-        console.log("User data:", data);
         setUser(data);
         getRecent();
       } catch (error) {
@@ -271,19 +270,21 @@ const getRecent = async () => {
             className="show-user-btn"
             title={showExpandedUserList ? "Show less users" : "Show all users"}
           >
-            {showExpandedUserList ? '−' : '+'}
+            {showExpandedUserList ? '-' : '+'}
           </button>
         </div>
-        <ul className="user-list overflow-y-auto max-h-[300px]">
+        <ul className="user-list overflow-y-auto max-h-[400px]">
           {users.length > 0 ? (
             
             showExpandedUserList ? (
               <>
               <RecentUsers />
-              <UserList />
+              <UserList onUserSelect={onUserSelect} />
               </>
             ) : <RecentUsers />
-          ) : (
+          ) : ( 
+            
+          
             <li className="no-users">
               No users available.
             </li>

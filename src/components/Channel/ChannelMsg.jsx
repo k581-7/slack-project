@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useData } from "../../context/DataProvider";
 import axios from "axios";
 import UserList from "../UserList/UserList";
+import './ChannelMsg.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -123,8 +124,7 @@ setChannelMembers(filteredMembers);
       {/* Header */}
       <div className="border-b border-[#820F17] p-4 bg-[#F5E9DC] flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-[#820F17]"># {channel.name}</h2>
-          <p className="text-sm text-[#820F17] opacity-70">Channel messages</p>
+          <h2 className="text-xl font-semibold text-[#820F17]">#{channel.name}</h2>
         </div>
 
         {/* Dropdown */}
@@ -132,17 +132,14 @@ setChannelMembers(filteredMembers);
           <button
             onClick={() => setIsOpen(!isOpen)}
             type="button"
-            className="text-[#820F17] border border-[#820F17] bg-white hover:bg-[#F5E9DC] focus:ring-2 focus:outline-none focus:ring-[#820F17] font-medium rounded-lg text-sm px-4 py-2.5 inline-flex items-center"
-          >
-            Channel members
-            <svg className="w-2.5 h-2.5 ml-2" viewBox="0 0 10 6">
-              <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            className="channel-members-btn">
+            Channel Members   
           </button>
           
+          
           {isOpen && (
-            <div className="absolute right-0 z-10 mt-2 w-44 bg-white rounded-lg shadow-sm ring-1 ring-black ring-opacity-5 divide-y divide-gray-100">
-              <ul className="py-2 text-sm text-gray-700">
+            <div className="channel-members-dropdown">
+               <ul className="py-2 text-sm text-[#FFE6D3] justify-center">
                 {channelMembers.map((member) => (
                 <div key={member.id}> 
               <p> {member.email} </p> 
@@ -155,7 +152,7 @@ setChannelMembers(filteredMembers);
               <div className="p-2">
                 <button
                   onClick={handleAddMember}
-                  className="text-[#820F17] text-sm hover:underline w-full text-left"
+                  className="add-member-btn"
                 >
                   + Add Member
                 </button>
@@ -164,6 +161,7 @@ setChannelMembers(filteredMembers);
           )}
         </div>
       </div>
+      
 
       {/* Messages */}
       <div className="flex-grow p-4">
@@ -171,10 +169,10 @@ setChannelMembers(filteredMembers);
           {messages.map((message) => {
             const isReceiver = message.receiver?.ownerId !== channel.id;
             return (
-              <div key={message.id} className={`flex ${isReceiver ? 'justify-end' : 'justify-start'}`}>
-                <div className={`w-3/4 rounded-md border border-[#820F17] p-2 ${isReceiver ? 'bg-blue-500 text-white' : 'bg-white'}`}>
-                  <p className="opacity-60 text-sm">{message.sender?.uid}</p>
-                  <p>{message.body}</p>
+              <div key={message.id} className={`flex ${isReceiver ? 'justify-start' : 'justify-start'}`}>
+                <div className={`w-3/4 rounded-md px-4 py-2 ${isReceiver ? 'bg-transparent text-[#820F17]' : 'bg-white'}`}>
+                  <p className="sender-uid">{message.sender?.uid}</p>
+                  <p className="message-body-text">{message.body}</p>
                 </div>
               </div>
             );

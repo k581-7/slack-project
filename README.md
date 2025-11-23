@@ -2,14 +2,14 @@
 
 Below are screenshots of the Pingsly UI:
 
+### Sign In Button
+![Sign In](src/assets/Pingsly_signin.png)
+
 ### Sign Up Page
 ![Sign Up](src/assets/Pingsly_signup.png)
 
 ### Login Page
 ![Login](src/assets/Pingsly_login.png)
-
-### Sign In Button
-![Sign In](src/assets/Pingsly_signin.png)
 
 ### Main UI - View 1
 ![Main UI 1](src/assets/Pingsly_UI1.png)

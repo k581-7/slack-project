@@ -3,7 +3,7 @@
 Below are screenshots of the Pingsly UI:
 
 ### Sign Up Page
-![Sign Up](src/assets/Pingsly_create.png)
+![Sign Up](src/assets/Pingsly_signup.png)
 
 ### Login Page
 ![Login](src/assets/Pingsly_login.png)

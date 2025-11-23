@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'; //internal nav
 import { useData } from '../../context/DataProvider';
 import axios from 'axios';
 import './Sidebar.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 import pingslyLogo from '../../assets/pingsly_nobg.png';
 import UserList from '../UserList/UserList';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUserId, setMessages, onLogOut }) {
+function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUserId, setMessages, onLogOut}) {
   const [user, setUser] = useState(null);
   const [channels, setChannels] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -19,68 +20,47 @@ function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUse
   const { userHeaders } = useData();
   const [users, setUsers] = useState([]);
   const [recent, setRecent] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(0);
+
+
 
   const fetchConversation = async () => {
     try {
-      // We fetch the conversation with the user by ID
-      console.log('SideBar.jsx SelectedUserID: ', selectedUserId);
       const conversation = await axios.get(`${API_URL}/messages`, {
         params: {
           receiver_id: selectedUserId,
           receiver_class: 'User'
         },
-        headers: {
-          client: userHeaders.client,
-          uid: userHeaders.uid,
-          expiry: userHeaders.expiry,
-          'access-token': userHeaders['access-token']
-        }
+        headers: userHeaders
       });
-
-      // We set the conversations to the conversation state
       setMessages(conversation?.data?.data);
     } catch (e) {
-      // For now we log what the error is, if there's any.
-      // This error should be handled gracefully, i.e. show a toast that says 'An unexpected error occured';
-      // compare first if this error is in server side, if not, this should already be handled by the client
       console.error("Failed to retrieve conversation.")
     }
   }
 
   useEffect(() => {
-    async function fetchUser() {
-      try {
-        const response = await fetch('https://slack-api.up.railway.app/api/v1/auth/validate_token', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            ...userHeaders,
-          },
-        });
+    const fetchUser = async () => {
+  try {
+    const response = await axios.get('https://slack-api.up.railway.app/api/v1/auth/validate_token', {
+      headers: {
+        'Content-Type': 'application/json',
+        ...userHeaders,
+      },
+    });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch user');
-        }
+    setUser(response.data); // Axios parses JSON 
+    getRecent();
+  } catch (error) {
+    console.error('Error fetching user:', error);
+  }
+};
 
-        const data = await response.json();
-        setUser(data);
-        getRecent();
-      } catch (error) {
-        console.error('Error fetching user:', error);
-      }
-    }
-
-    if (!user) fetchUser();
-  }, [user, userHeaders]);
+    if (!user) fetchUser(); //Kapag wala pang user sa state, saka lang siya magfe-fetch
+  }, [user, userHeaders]); // pag nag bago login mag uulit code sa loob
 
   const getChannels = async () => {
     try {
-      const requestHeaders = {
-        headers: userHeaders
-      };
-      
-      const response = await axios.get(`${API_URL}/channels`, requestHeaders);
+      const response = await axios.get(`${API_URL}/channels`, { headers: userHeaders });
       const { data } = response;
       setChannels(data.data || []);
     } catch (error) {
@@ -88,67 +68,38 @@ function Sidebar({ onChannelSelect, selectedChannelId, onUserSelect, selectedUse
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => { //for channel creation
     e.preventDefault();
-    
+
     try {
-      const newChannel = {
-        name: newChannelName,
-        user_ids: []
-      };
-
-      const requestHeaders = {
-        headers: userHeaders
-      };
-
-      await axios.post(`${API_URL}/channels`, newChannel, requestHeaders);
-
+      const newChannel = { name: newChannelName, user_ids: [] };  //create new channel
+      await axios.post(`${API_URL}/channels`, newChannel, { headers: userHeaders });
       alert("Channel created successfully!");
       setNewChannelName("");
       setShowCreateForm(false);
-      
       getChannels();
-      
     } catch (error) {
       alert("Channel creation failed. Please try again.");
-      console.error(error);
     }
   };
 
-useEffect(() => {
-  if (userHeaders) getChannels();
-}, [userHeaders]);
-
-useEffect(() => {
-  if (userHeaders) getUsers();
-}, [userHeaders]);
-
-useEffect(() => {
-  if (selectedUserId === 0) return;
-
-  fetchConversation()
-}, [selectedUserId])
+  useEffect(() => { if (userHeaders) getChannels(); }, [userHeaders]);
+  useEffect(() => { if (userHeaders) getUsers(); }, [userHeaders]);
+  useEffect(() => { if (selectedUserId === 0) return; fetchConversation(); }, [selectedUserId]);
 
   const getUsers = async () => {
     try {
-      const requestHeaders = {
-        headers: userHeaders
-      };
-      
-      const response = await axios.get(`${API_URL}/users`, requestHeaders);
+      const response = await axios.get(`${API_URL}/users`, { headers: userHeaders });
       const { data } = response;
       setUsers(data.data || []);
     } catch (error) {
       console.error("Cannot get users:", error);
     }
   };
-const getRecent = async () => {
+
+  const getRecent = async () => {
     try {
-      const requestHeaders = {
-        headers: userHeaders
-      };
-      
-      const response = await axios.get(`${API_URL}/users/recent`, requestHeaders);
+      const response = await axios.get(`${API_URL}/users/recent`, { headers: userHeaders });
       const { data } = response;
       setRecent(data.data || []);
     } catch (error) {
@@ -156,48 +107,27 @@ const getRecent = async () => {
     }
   };
 
-
   const RecentUsers = () => {
+    const uniqueRecent = recent.filter((user, index, self) => index === self.findIndex((u) => u.id === user.id));
+    return uniqueRecent.map((userItem) => (   // Ipa-map bawat natirang unique user para ipakita sa UI
+      <li key={userItem.id}>
+        <div
+          onClick={() => onUserSelect && onUserSelect(userItem)}
+          className={`user-link ${selectedUserId === userItem.id ? 'selected' : ''}`}  // for highlight
+          style={{ cursor: 'pointer' }}
+        >
+          {userItem.email || userItem.name || `User ${userItem.id}`} 
+        </div>
+      </li>
+    ));
+  };
 
-    const uniqueRecent = recent.filter(
-      (user, index, self) =>
-        index === self.findIndex((u) => u.id === user.id)
-    );
-    return (
-    uniqueRecent.map((userItem) => {
-      return (
-        <li key={userItem.id}>
-          <div
-            onClick={() => onUserSelect && onUserSelect(userItem)}
-            className={`user-link ${selectedUserId === userItem.id ? 'selected' : ''}`}
-            style={{ cursor: 'pointer' }}
-          >
-            {userItem.email || userItem.name || `User ${userItem.id}`}
-          </div>
-        </li>
-    // return (
-    //   recent.map((userItem) => {
-    //     console.log("Recent users:", recent);
-    //           return (
-    //             <li key={userItem.id}>
-    //               <div
-    //                 onClick={() => onUserSelect && onUserSelect(userItem)}
-    //                 className={`user-link ${selectedUserId === userItem.id ? 'selected' : ''}`}
-    //                 style={{ cursor: 'pointer' }}
-    //               >
-    //                 {userItem.email || userItem.name || `User ${userItem.id}`}
-    //               </div>
-    //             </li>
-              )
-            })
-    )
-  }
   return (
     <div className="sidebar">
       <div>
         <h1 className="side-bar-home">
-          <Link to="/">
-            <img src={pingslyLogo} alt="Pingsly Logo"/>
+          <Link>
+            <img src={pingslyLogo} alt="Pingsly Logo" />
             Pingsly
           </Link>
         </h1>
@@ -224,15 +154,10 @@ const getRecent = async () => {
               required
             />
             <div className="form-actions">
-              <button type="submit" className="btn-create">
-                Create
-              </button>
+              <button type="submit" className="btn-create">Create</button>
               <button
                 type="button"
-                onClick={() => {
-                  setShowCreateForm(false);
-                  setNewChannelName("");
-                }}
+                onClick={() => { setShowCreateForm(false); setNewChannelName(""); }}
                 className="btn-cancel"
               >
                 Cancel
@@ -255,9 +180,7 @@ const getRecent = async () => {
               </li>
             ))
           ) : (
-            <li className="no-channels">
-              No channels available. Create one to get started!
-            </li>
+            <li className="no-channels">No channels available. Create one to get started!</li>
           )}
         </ul>
       </div>
@@ -274,20 +197,15 @@ const getRecent = async () => {
           </button>
         </div>
         <ul className="user-list overflow-y-auto max-h-[450px]">
-          {users.length > 0 ? (
-            
-            showExpandedUserList ? (
-              <>
-              <RecentUsers />
-              <UserList onUserSelect={onUserSelect} />
-              </>
-            ) : <RecentUsers />
-          ) : ( 
-            
-          
-            <li className="no-users">
-              No users available.
-            </li>
+          {users.length > 0 ? ( //checks if  may channel if meron, gow
+            <>
+              {!showExpandedUserList && <RecentUsers />}
+              {showExpandedUserList && (
+                <UserList onUserSelect={onUserSelect} showSearch={showExpandedUserList}/>
+              )}
+            </>
+          ) : (
+            <li className="no-users">No users available.</li> //else eto result
           )}
         </ul>
       </div>
@@ -295,11 +213,11 @@ const getRecent = async () => {
       <div className="user-info">
         {user?.data?.email ? (
           <div>
-            Logged in as: <span className="user-email">{user.data.email}</span>
-            <button onClick={onLogOut} className="logout-btn"><FontAwesomeIcon icon={faArrowRightFromBracket} />
-    </button>
+            <FontAwesomeIcon icon={faUser}   /> <span className="user-email">{user.data.email}</span>
+            <button onClick={onLogOut} className="logout-btn">
+              <FontAwesomeIcon icon={faArrowRightFromBracket} />
+            </button>
           </div>
-          
         ) : (
           <div>Loading user...</div>
         )}

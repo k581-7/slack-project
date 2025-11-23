@@ -12,23 +12,23 @@ function Home({onLogOut}) {
   const [selectedChannel, setSelectedChannel] = useState(null);
   const [messages, setMessages] = useState([]);
   const { userHeaders, setAllUsers } = useData();
+  //Pulls userHeaders and setAllUsers from DataProvider
 
  const getUsers = async () => {
     try {
-      const requestHeaders = { headers: userHeaders };
+      const requestHeaders = { headers: userHeaders }; // Prepares the request headers using the userHeaders from context.
       const response = await axios.get(`${API_URL}/users`, requestHeaders);
       const userList = response.data.data || [];
       setAllUsers(userList);
     } catch (error) {
-      console.error("Cannot get users:", error);
     }
   };
 
-    useEffect(() => {
-      getUsers();
-      console.log('SelectedUser :', selectedUser);
+    useEffect(() => { //run the code
+      getUsers(); //fetching users
+
     }, []);
-      console.log('SelectedUser :', selectedUser);
+
   return (
     <div className="flex h-screen overflow-hidden">
       <SideBar
@@ -36,34 +36,26 @@ function Home({onLogOut}) {
           setSelectedUser(user);
           setSelectedChannel(null);
         }}
-        selectedUserId={selectedUser?.id}
+        selectedUserId={selectedUser?.id} //Passes the selected user's ID (or undefined if null) to the Sidebar
         onChannelSelect={(channel) => {
           setSelectedChannel(channel);
           setSelectedUser(null);
         }}
-        selectedChannelId={selectedChannel?.id}
+        selectedChannelId={selectedChannel?.id} //Passes the selected channel ID to the Sidebar 
         setMessages={setMessages}
         className='log-out' onLogOut={onLogOut}
+        
       />
 
       <div className="flex flex-col flex-grow">
         {selectedChannel ? (
           <ChannelMessage channel={selectedChannel} />
         ) : (
-          <div
-      style={{
-
-      }}
-    >
+          
             <div className="flex-1">
               {selectedUser && (
                 <Message receiverId={selectedUser.id} receiverEmail={selectedUser.uid} receiverType="User" messages={messages} setMessages={setMessages} />
               )}
-              {selectedChannel && (
-                <Message channelId={selectedChannel.id} receiverType="Channel" />
-                
-              )}
-            </div>
           </div>
         )}
       </div>

@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function UserList({ limit = null, showSearch = false, channelId = null, onUserSelect = null }) {
+function UserList({ limit = null, showSearch = true, channelId = null, onUserSelect = null }) {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -21,15 +21,14 @@ function UserList({ limit = null, showSearch = false, channelId = null, onUserSe
       setUsers(userList);
       setFilteredUsers(userList);
     } catch (error) {
-      console.error("Cannot get users:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    getUsers();
-  }, [userHeaders]);
+    getUsers(); //function works
+  }, [userHeaders]); //changes depending on who logs in
 
   // Filter users
   useEffect(() => {
@@ -45,7 +44,7 @@ function UserList({ limit = null, showSearch = false, channelId = null, onUserSe
     }
   }, [searchQuery, users]);
 
-  // const usersToDisplay = limit ? filteredUsers.slice(0, limit) : filteredUsers;
+
   const usersToDisplay = filteredUsers;
 
   if (loading) {

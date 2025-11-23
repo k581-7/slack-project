@@ -26,6 +26,19 @@
   color: #D15734;
 }
 
+.close-btn {
+  padding: 5px 10px;
+  border: 2px solid #D15734; /* Border color */
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  margin-left: .50rem;
+  margin-top: .50rem;
+  color: #D15734;
+}
+
 
 .channel-members-dropdown{
   background: rgba(255, 255, 255, 0.1);

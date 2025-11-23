@@ -83,3 +83,8 @@ html,
 h2 {
   font-size: 30px;
 }
+
+.logo-open img {
+  height: 150px;
+  width: 200px;
+}
